@@ -1,98 +1,311 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 
-export default function HomeScreen() {
+export default function App() {
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
+
+  function entrar() {
+    if (!usuario || !senha) {
+      Alert.alert("Atenção", "Preencha o usuário e a senha.");
+      return;
+    }
+
+    Alert.alert("Login", `Bem-vindo, ${usuario}!`);
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.content}>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+          <Text style={styles.logo}>Instagram</Text>
+
+          <View style={styles.formulario}>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Telefone, nome de usuário ou email"
+              placeholderTextColor="#737373"
+              value={usuario}
+              onChangeText={setUsuario}
+              autoCapitalize="none"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Senha"
+              placeholderTextColor="#737373"
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry
+            />
+
+           
+            <TouchableOpacity
+              style={styles.botaoEntrar}
+              onPress={entrar}
+            >
+              <Text style={styles.textoBotao}>
+                Entrar
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+      
+          <View style={styles.linhaOu}>
+            <View style={styles.linha} />
+
+            <Text style={styles.ou}>
+              OU
+            </Text>
+
+            <View style={styles.linha} />
+          </View>
+
+          <TouchableOpacity>
+            <Text style={styles.facebook}>
+              ● Entrar com o Facebook
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <Text style={styles.esqueci}>
+              Esqueceu a senha?
+            </Text>
+          </TouchableOpacity>
+
+
+          <View style={styles.cadastro}>
+
+            <Text style={styles.textoCadastro}>
+              Não tem uma conta?
+            </Text>
+
+            <TouchableOpacity>
+              <Text style={styles.cadastre}>
+                {" "}Cadastre-se
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+  
+          <Text style={styles.download}>
+            Obtenha o aplicativo.
+          </Text>
+
+     
+          <View style={styles.lojas}>
+
+            <TouchableOpacity style={styles.loja}>
+              <Text style={styles.textoLoja}>
+                Google Play
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.loja}>
+              <Text style={styles.textoLoja}>
+                Microsoft
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+          <View style={styles.footer}>
+
+            <Text style={styles.footerTexto}>
+              Meta • Sobre • Blog • Carreiras • Ajuda • Privacidade
+            </Text>
+
+            <Text style={styles.footerTexto}>
+              © 2026 Instagram
+            </Text>
+
+          </View>
+
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+
+
+  container: {
+    flex: 1,
+    backgroundColor: "#fafafa",
+  },
+
+
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
+
+
+  content: {
+    width: "100%",
+    maxWidth: 350,
+    alignSelf: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 50,
+  },
+
+  
+  logo: {
+    fontSize: 44,
+    fontWeight: "500",
+    fontStyle: "italic",
+    color: "#262626",
+    marginBottom: 35,
+  },
+
+  
+  formulario: {
+    width: "100%",
+  },
+
+  input: {
+    width: "100%",
+    height: 42,
+    backgroundColor: "#fafafa",
+    borderWidth: 1,
+    borderColor: "#dbdbdb",
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    marginBottom: 7,
+    fontSize: 12,
+    color: "#262626",
+  },
+
+  botaoEntrar: {
+    width: "100%",
+    height: 36,
+    backgroundColor: "#0095f6",
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 5,
+  },
+
+  textoBotao: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+
+  linhaOu: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 25,
+  },
+
+  linha: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#dbdbdb",
+  },
+
+  ou: {
+    marginHorizontal: 15,
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#737373",
+  },
+
+  facebook: {
+    color: "#385185",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+
+  esqueci: {
+    color: "#00376b",
+    fontSize: 12,
+    marginTop: 20,
+  },
+
+  
+  cadastro: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 30,
+    paddingVertical: 20,
+    borderWidth: 1,
+    borderColor: "#dbdbdb",
+    backgroundColor: "#fff",
+  },
+
+  textoCadastro: {
+    fontSize: 14,
+    color: "#262626",
+  },
+
+  cadastre: {
+    color: "#0095f6",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+
+  download: {
+    fontSize: 14,
+    marginTop: 25,
+    marginBottom: 15,
+    color: "#262626",
+  },
+
+  lojas: {
+    flexDirection: "row",
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+
+  loja: {
+    backgroundColor: "#111",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 6,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+
+  textoLoja: {
+    color: "#fff",
+    fontSize: 11,
   },
+
+  /* RODAPÉ */
+  footer: {
+    width: "100%",
+    alignItems: "center",
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+
+  footerTexto: {
+    color: "#737373",
+    fontSize: 10,
+    textAlign: "center",
+    marginVertical: 3,
+  },
+
 });
+
