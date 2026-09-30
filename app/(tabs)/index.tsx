@@ -1,16 +1,15 @@
-
+import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   Alert,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-
 export default function App() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -56,14 +55,19 @@ export default function App() {
             />
 
            
-            <TouchableOpacity
-              style={styles.botaoEntrar}
-              onPress={entrar}
-            >
-              <Text style={styles.textoBotao}>
-                Entrar
-              </Text>
-            </TouchableOpacity>
+            
+               <TouchableOpacity 
+  style={styles.botaoEntrar} 
+  onPress={entrar}
+>
+  <Text style={styles.textoBotao}>
+    <Link href="/tela_inicial">
+      Entrar
+    </Link>
+  </Text>
+</TouchableOpacity>
+               
+              
 
           </View>
 
