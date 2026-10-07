@@ -1,86 +1,167 @@
-
-import React from "react";
+import * as Location from "expo-location";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
+  Button,
   Image,
+  Linking,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 const stories = [
-  { nome: "Seu story", imagem: "https://i.pravatar.cc/150?img=11" },
-  { nome: "neymarjr", imagem: "https://i.pravatar.cc/150?img=12" },
-  { nome: "cristiano", imagem: "https://i.pravatar.cc/150?img=13" },
-  { nome: "anitta", imagem: "https://i.pravatar.cc/150?img=14" },
-  { nome: "vinijr", imagem: "https://i.pravatar.cc/150?img=15" },
-  { nome: "luccas", imagem: "https://i.pravatar.cc/150?img=16" },
+  { nome: "Seu story", imagem: "https://i.pinimg.com/474x/57/54/4f/57544f26d902645c85b783ba1e9643e1.jpg" },
+  { nome: "neymarjr", imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRK_Wg63_MIQ4iGcO32pWpSdth7Q91-j03ygLyF4Piw8kkmJ_W2LvJFGdIO&s=10" },
+  { nome: "cristiano", imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSggSDV-DTYSQ_JVmS55N-aTNLLu23Qf62Z0PY9zUikPQ&s=10" },
+  { nome: "Ana paula", imagem: "https://institucional.ienh.com.br/Files/Froala/638344487209137633139256jpg.jpg" },
+  { nome: "vinijr", imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRekPzT1aMz6Yp_bKpGMjAjQmohduLdq6A_TdnYV0wodQ&s=10" },
+  { nome: "Marcelinho Carioca", imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZwrVFebgqnxnhs_LfgerLW8Z1Onvlm7S3zN-NDgxxfNHw9DICzOruRF-S&s=10" },
 ];
 
 const posts = [
   {
     usuario: "neymarjr",
-    foto: "https://i.pravatar.cc/150?img=12",
-    publicacao: "https://picsum.photos/id/1011/600/600",
+    foto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRK_Wg63_MIQ4iGcO32pWpSdth7Q91-j03ygLyF4Piw8kkmJ_W2LvJFGdIO&s=10",
+    publicacao: "https://s2-g1.glbimg.com/rya9IIIFPD0pLe5ubPeyxj7Aik0=/4x0:617x684/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2022/6/z/z04YtNQNyRVFARxTgSHQ/neymar.png",
     curtidas: "2.450.321",
-    legenda: "Vivendo momentos especiais! ⚽",
+    legenda: "Vota vota e confirma 22 é bolsonaro!",
   },
   {
-    usuario: "cristiano",
-    foto: "https://i.pravatar.cc/150?img=13",
-    publicacao: "https://picsum.photos/id/1015/600/600",
+    usuario: "Flavio Bolsonaro",
+    foto: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Foto_oficial_do_senador_Fl%C3%A1vio_Bolsonaro_%28v._AgSen%29_%283x4%29.jpg/960px-Foto_oficial_do_senador_Fl%C3%A1vio_Bolsonaro_%28v._AgSen%29_%283x4%29.jpg?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=thumbnail",
+    publicacao: "https://cdn.jornalopcao.com.br/assets/2019/03/x80424051_paFlavio-Bolsonaro-com-seu-assessor-Fabricio-Queiroz-simulando-uma-arma-de-fogo.-Foto-Re.jpg.pagespeed.ic_.g8z1-Md7tg-e1552654971121-620x350.jpg",
     curtidas: "5.120.456",
-    legenda: "Never give up! 💪",
+    legenda: "Rumo ao segundo turno! ",
   },
 ];
 
 export default function TelaInicial() {
+const [latitude, setLatitude] = useState<number | null>(null);
+const [longitude, setLongitude] = useState<number | null>(null);
+const [cep, setCep] =useState("");
+const [endereco, setEndereco] = useState<any>(null);
+const [erro, setErro] = useState("");
+const [carregando, setCarregando] = useState(false); 
+async function descobrirLocalizacao() {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      alert("Permissão de localização negada!");
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+
+    setLatitude(location.coords.latitude);
+    setLongitude(location.coords.longitude);
+  }
+async function buscarCep(){
+  setErro("");
+  setEndereco(null);
+
+    if(cep.length !== 8){
+      setErro("Digite um CEP com 8 digitos.");
+      return;
+    } 
+    setCarregando(true);
+
+    try{
+      const resposta= await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+      const dados= await resposta.json();
+
+      if(dados.erro){
+        setErro("CEP não encontrado.");
+        return;
+      }
+      setEndereco(dados);
+      }catch(erro){
+      setErro("Não foi possível consultar ao CEP.");
+      } finally{
+        setCarregando(false);
+      }
+    }
+    
+
   return (
     <View style={styles.container}>
+      <View style={styles.sidebar}>
+         <Text >📍 Buscar endereço</Text>
 
-     {/* MENU LATERAL */}
-<View style={styles.sidebar}>
+    <Text>Digite um CEP para consultar o endereço:</Text>
 
-  <ScrollView
-    showsVerticalScrollIndicator={false}
-    contentContainerStyle={styles.sidebarContent}
-  >
-    <Text style={styles.logo}>Instagram</Text>
+    <TextInput
+      placeholder="Ex: 93318000"
+      keyboardType="numeric"
+      value={cep}
+      onChangeText={(novoCep) => setCep(novoCep)}
+      maxLength={8}
+    />
 
-    <View style={styles.menu}>
-      {[
-        ["⌂", "Página inicial"],
-        ["⌕", "Pesquisa"],
-        ["◈", "Explorar"],
-        ["▷", "Reels"],
-        ["✉", "Mensagens"],
-        ["♡", "Notificações"],
-        ["＋", "Criar"],
-      ].map(([icone, nome]) => (
-        <TouchableOpacity style={styles.menuItem} key={nome}>
-          <Text style={styles.menuIcon}>{icone}</Text>
-          <Text style={styles.menuText}>{nome}</Text>
+    <Button
+      title={carregando ? "Buscando..." : "Buscar CEP"}
+      onPress={buscarCep}
+      disabled={carregando}
+    />
+
+    {erro !== "" && <Text>❌ {erro}</Text>}
+
+    {endereco && (
+      <View >
+        <Text>📍 Endereço encontrado</Text>
+
+        <Text>CEP: {endereco.cep}</Text>
+        <Text>Rua: {endereco.logradouro}</Text>
+        <Text>Bairro: {endereco.bairro}</Text>
+        <Text>Cidade: {endereco.localidade}</Text>
+        <Text>Estado: {endereco.uf}</Text>
+      </View>
+      
+    )}
+    
+
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.sidebarContent}
+      >
+        <Text style={styles.logo}>Instagram</Text>
+
+        <View style={styles.menu}>
+          {[
+            ["⌂", "Página inicial"],
+            ["⌕", "Pesquisa"],
+            ["◈", "Explorar"],
+            ["▷", "Reels"],
+            ["✉", "Mensagens"],
+            ["♡", "Notificações"],
+            ["＋", "Criar"],
+          ].map(([icone, nome]) => (
+            <TouchableOpacity style={styles.menuItem} key={nome}>
+              <Text style={styles.menuIcon}>{icone}</Text>
+              <Text style={styles.menuText}>{nome}</Text>
+            </TouchableOpacity>
+          ))}
+
+          <TouchableOpacity style={styles.menuItem}>
+            <Image
+              source={{ uri: "https://i.pinimg.com/474x/57/54/4f/57544f26d902645c85b783ba1e9643e1.jpg" }}
+              style={styles.menuProfile}
+            />
+            <Text style={styles.menuText}>Perfil</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.more}>
+          <Text style={styles.menuIcon}>☰</Text>
+          <Text style={styles.menuText}>Mais</Text>
         </TouchableOpacity>
-      ))}
 
-      <TouchableOpacity style={styles.menuItem}>
-        <Image
-          source={{ uri: "https://i.pravatar.cc/150?img=11" }}
-          style={styles.menuProfile}
-        />
-        <Text style={styles.menuText}>Perfil</Text>
-      </TouchableOpacity>
+      </ScrollView>
     </View>
-
-    <TouchableOpacity style={styles.more}>
-      <Text style={styles.menuIcon}>☰</Text>
-      <Text style={styles.menuText}>Mais</Text>
-    </TouchableOpacity>
-
-  </ScrollView>
-</View>
-      {/* CONTEÚDO PRINCIPAL */}
       <ScrollView
         style={styles.mainScroll}
         contentContainerStyle={styles.mainContent}
@@ -88,10 +169,9 @@ export default function TelaInicial() {
       >
         <View style={styles.content}>
 
-          {/* FEED */}
           <View style={styles.feed}>
 
-            {/* STORIES */}
+  
             <View style={styles.stories}>
               {stories.map((story, index) => (
                 <TouchableOpacity
@@ -111,15 +191,16 @@ export default function TelaInicial() {
               ))}
             </View>
 
-            {/* PUBLICAÇÕES */}
+          
             {posts.map((post, index) => (
               <View style={styles.post} key={index}>
 
-                {/* CABEÇALHO DO POST */}
+               
                 <View style={styles.postHeader}>
                   <Image
                     source={{ uri: post.foto }}
                     style={styles.postAvatar}
+                    
                   />
 
                   <View style={styles.postUserInfo}>
@@ -136,14 +217,12 @@ export default function TelaInicial() {
                   </TouchableOpacity>
                 </View>
 
-                {/* IMAGEM */}
                 <Image
                   source={{ uri: post.publicacao }}
                   style={styles.postImage}
                   resizeMode="cover"
                 />
 
-                {/* AÇÕES */}
                 <View style={styles.actions}>
                   <View style={styles.actionLeft}>
                     <TouchableOpacity>
@@ -164,7 +243,7 @@ export default function TelaInicial() {
                   </TouchableOpacity>
                 </View>
 
-                {/* LEGENDA */}
+               
                 <Text style={styles.likes}>
                   Curtido por outras pessoas e mais {post.curtidas} pessoas
                 </Text>
@@ -191,17 +270,17 @@ export default function TelaInicial() {
             ))}
           </View>
 
-          {/* SUGESTÕES */}
+      
           <View style={styles.suggestions}>
 
             <View style={styles.profileSuggestion}>
               <Image
-                source={{ uri: "https://i.pravatar.cc/150?img=11" }}
+                source={{ uri: "https://i.pinimg.com/474x/57/54/4f/57544f26d902645c85b783ba1e9643e1.jpg" }}
                 style={styles.suggestionAvatar}
               />
 
               <View style={{ flex: 1 }}>
-                <Text style={styles.username}>seu_usuario</Text>
+                <Text style={styles.username}>user</Text>
                 <Text style={styles.grayText}>Seu perfil</Text>
               </View>
 
@@ -214,16 +293,16 @@ export default function TelaInicial() {
             </View>
 
             {[
-              ["lucas", 20],
-              ["gabriel", 21],
-              ["pedro", 22],
-              ["mariana", 23],
-              ["isabela", 24],
-            ].map(([nome, numero]) => (
+              ["Renato Portallupi", 20],
+              ["Gabriel Ganley", 21],
+              ["Augusto Nascimento", 22],
+              ["Pelé", 23],
+              ["Jair M. Bolsonaro", 24],
+            ].map(([nome]) => (
               <View style={styles.suggestionItem} key={nome}>
                 <Image
                   source={{
-                    uri: `https://i.pravatar.cc/150?img=${numero}`,
+                    uri: `https://i.pinimg.com/474x/57/54/4f/57544f26d902645c85b783ba1e9643e1.jpg`,
                   }}
                   style={styles.suggestionAvatar}
                 />
@@ -245,16 +324,60 @@ export default function TelaInicial() {
             </Text>
 
             <Text style={styles.copyright}>
-              © 2026 INSTAGRAM FROM META
-            </Text>
+              © 2026 INSTAGRAM FROM AUGUSTO
+            
+            <View style={styles.container}>
+      <Text style={styles2.title}>POSTS PERTO DE VOCÊ</Text>
 
+      <Text>Descubra conteúdos próximos da sua localização.</Text>
+
+      <Button title="Usar minha localização" onPress={descobrirLocalizacao} />
+
+      {latitude !== null && (
+        <View style={styles2.resultado}>
+          <Text>Latitude: {latitude}</Text>
+
+          <Text>Longitude: {longitude}</Text>
+
+          <Button
+            title="Ver no mapa"
+            onPress={() =>
+              Linking.openURL(
+                `https://www.google.com/maps?q=${latitude},${longitude}`,
+              )
+            }
+          />
+        </View>
+      )}
+    </View>
+            </Text>
+              {/* FAZER O BUTTON PARA LOC */}
           </View>
         </View>
       </ScrollView>
     </View>
   );
 }
+const styles2 = StyleSheet.create({
+  container1: {
+    flex: 1,
+    padding: 14,
+    
+    gap: 20,
+  },
 
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+
+  },
+
+  resultado: {
+    padding: 1,
+    gap: 20,
+  },
+});
 const styles = StyleSheet.create({
   container: {
     flex: 1,
