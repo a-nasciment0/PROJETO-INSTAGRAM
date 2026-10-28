@@ -1,4 +1,9 @@
 import { Link } from "expo-router";
+import {
+  addDoc,
+  collection,
+  getDocs
+} from "firebase/firestore";
 import React, { useState } from "react";
 import {
   Alert,
@@ -10,10 +15,46 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { db } from "../../firebaseConfig";
+
 export default function App() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
 
+ const ListarUsuarios = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      const lista: any[] = [];
+      querySnapshot.forEach((documento) => {
+        lista.push({ id: documento.id, ...documento.data() });
+      });
+      setUsuario(lista);
+    } catch (error) {
+      console.error("Erro ao listar:", error);
+      Alert.alert("Erro", "Não foi possível carregar os usuários");
+    }
+  
+   const adicionarUsuario = async () => {
+    if (!usuario.trim() || !senha.trim()) {
+      Alert.alert("Atenção", "Preencha usuário e senha");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "usuarios"), {
+        nome: usuario.trim(),
+        senha: senha.trim(),
+      });
+      Alert.alert("Sucesso", "Usuário adicionado!");
+      setUsuario("");
+      setSenha('');
+    } catch (error) {
+      console.error("Erro ao adicionar:", error);
+      Alert.alert("Erro", "Não foi possível adicionar o usuário");
+    }
+  };
+
+  };
   function entrar() {
     if (!usuario || !senha) {
       Alert.alert("Atenção", "Preencha o usuário e a senha.");
